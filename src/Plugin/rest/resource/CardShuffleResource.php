@@ -21,7 +21,7 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class CardShuffleResource extends ResourceBase {
 
-    protected Request $request;
+    private string $errorMessage = '';
 
     /**
      * Responds to GET requests
@@ -35,6 +35,18 @@ class CardShuffleResource extends ResourceBase {
 
         $rows = $request->query->get('rows');
         $columns = $request->query->get('columns');
+
+        if (!$this->isValidInput($rows, $columns)) {
+            $response = [
+                'meta' => [
+                    'success' => false,
+                    'message' => $this->errorMessage,
+                ],
+                'data' => [],
+            ];
+
+            return new ModifiedResourceResponse($response);
+        }
 
         $success = true;
         $cardCount = 4;
@@ -61,5 +73,40 @@ class CardShuffleResource extends ResourceBase {
         ];
 
         return new ModifiedResourceResponse($response);
+    }
+
+
+    /**
+     * Returns true if inputs are OK
+     */
+    private function isValidInput($rows, $columns): bool {
+        $min = 1;
+        $max = 6;
+
+        $options = [
+            'options' => [
+                'min_range' => $min,
+                'max_range' => $max,
+            ]
+        ];
+
+        $rows = filter_var($rows, FILTER_VALIDATE_INT, $options);
+        if (false === $rows) {
+            $this->errorMessage = "rows value is not valid or is missing, must be an integer from $min to $max";
+            return false;
+        }
+
+        $columns = filter_var($columns, FILTER_VALIDATE_INT, $options);
+        if (false === $columns) {
+            $this->errorMessage = "columns value is not valid or is missing, must be an integer from $min to $max";
+            return false;
+        }
+
+        if ($rows % 2 && $columns % 2) {
+            $this->errorMessage = "at least one of rows or columns value must be EVEN, both cannot be ODD";
+            return false;
+        }
+
+        return true;
     }
 }
