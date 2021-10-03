@@ -1,0 +1,13 @@
+{
+    "name": "drupal/card-shuffle",
+    "description": "Card Shuffle Module",
+    "type": "drupal-custom-module",
+    "license": "private",
+    "authors": [
+        {
+            "name": "Jeff Groves",
+            "email": "jeff@jasminezone.com"
+        }
+    ],
+    "require": {}
+}
