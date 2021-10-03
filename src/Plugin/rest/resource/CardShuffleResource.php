@@ -49,6 +49,9 @@ class CardShuffleResource extends ResourceBase {
             return new ModifiedResourceResponse($response);
         }
 
+        $rows = (int) $rows;
+        $columns = (int) $columns;
+
         $cardCount = $rows * $columns;
 
         for ($i = 0; $i < $rows; $i++) {
@@ -61,8 +64,6 @@ class CardShuffleResource extends ResourceBase {
 
         $response = [
             'meta' => [
-                'rows' => $rows,
-                'columns' => $columns,
                 'success' => true,
                 'cardCount' => $cardCount,
                 'uniqueCardCount' => $uniqueCardCount,
