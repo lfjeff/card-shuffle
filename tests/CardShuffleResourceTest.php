@@ -61,8 +61,6 @@ class CardShuffleResourceTest extends TestCase {
 
         $r = $response->toArray();
 
-        echo "r=".json_encode($r, JSON_PRETTY_PRINT)."\n";  // jjj
-
         $meta = $r['meta'];
         $cards = $r['data']['cards'];
 
@@ -79,5 +77,40 @@ class CardShuffleResourceTest extends TestCase {
         $this->assertSame($columns, count($cards[1]));
     }
 
+    public function testCardShuffleWithInvalidInputs(): void {
+        $inputs = [
+            [0, 1, "rows value is not valid or is missing"],
+            [7, 1, "rows value is not valid or is missing"],
+            ['', 1, "rows value is not valid or is missing"],
 
+            [1, 0, "columns value is not valid or is missing"],
+            [1, 7, "columns value is not valid or is missing"],
+            [1, '', "columns value is not valid or is missing"],
+
+            [1, 1, "at least one of rows or columns value must be EVEN"],
+            [3, 3, "at least one of rows or columns value must be EVEN"],
+        ];
+
+        foreach ($inputs as $input) {
+            $rows = $input[0];
+            $columns = $input[1];
+            $message = $input[2];
+
+            $response = $this->httpClient->request('GET', $this->url, [
+                'auth_basic' => $this->auth_basic,
+                'headers' => $this->headers,
+                'query' => [
+                    'rows' => $rows,
+                    'columns' => $columns,
+                ]
+            ]);
+
+            $r = $response->toArray();
+
+            $meta = $r['meta'];
+
+            $this->assertFalse($meta['success']);
+            $this->assertStringStartsWith($message, $meta['message']);
+        }
+    }
 }
