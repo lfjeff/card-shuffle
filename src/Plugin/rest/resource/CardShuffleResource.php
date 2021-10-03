@@ -21,6 +21,7 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class CardShuffleResource extends ResourceBase {
 
+    private array $uniqueCard = [];
     private string $errorMessage = '';
 
     /**
@@ -48,24 +49,24 @@ class CardShuffleResource extends ResourceBase {
             return new ModifiedResourceResponse($response);
         }
 
-        $success = true;
-        $cardCount = 4;
+        $cardCount = $rows * $columns;
 
-        $uniqueCards = ["D", "G"];
+        for ($i = 0; $i < $rows; $i++) {
+            $cards[$i] = $this->createRandomRow($columns);
+        }
+
+        $uniqueCards = array_keys($this->uniqueCard);
+        sort($uniqueCards);
         $uniqueCardCount = count($uniqueCards);
-
-        $cards = [
-            ["G", "D"],
-            ["D", "G"],
-        ];
 
         $response = [
             'meta' => [
                 'rows' => $rows,
                 'columns' => $columns,
-                'success' => $success,
+                'success' => true,
                 'cardCount' => $cardCount,
                 'uniqueCardCount' => $uniqueCardCount,
+                'uniqueCards' => $uniqueCards,
             ],
             'data' => [
                 'cards' => $cards,
@@ -74,7 +75,6 @@ class CardShuffleResource extends ResourceBase {
 
         return new ModifiedResourceResponse($response);
     }
-
 
     /**
      * Returns true if inputs are OK
@@ -108,5 +108,21 @@ class CardShuffleResource extends ResourceBase {
         }
 
         return true;
+    }
+
+    private function createRandomRow(int $columns): array {
+        $count = 0;
+        $row = [];
+
+        while ($count < $columns) {
+            $randomLetter = chr(64 + rand(1, 18));
+            if (!in_array($randomLetter, $row)) {
+                $row[] = $randomLetter;
+                $this->uniqueCard[$randomLetter] = true;
+            }
+            $count = count($row);
+        }
+
+        return $row;
     }
 }
