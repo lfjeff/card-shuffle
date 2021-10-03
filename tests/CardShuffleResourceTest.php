@@ -111,6 +111,8 @@ class CardShuffleResourceTest extends TestCase {
 
             $this->assertFalse($meta['success']);
             $this->assertStringStartsWith($message, $meta['message']);
+            $this->assertIsArray($r['data']);
+            $this->assertEmpty($r['data']);
         }
     }
 }
