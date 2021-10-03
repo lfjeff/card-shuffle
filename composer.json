@@ -2,7 +2,7 @@
     "name": "drupal/card-shuffle",
     "description": "Card Shuffle Module",
     "type": "drupal-custom-module",
-    "license": "private",
+    "license": "proprietary",
     "authors": [
         {
             "name": "Jeff Groves",
